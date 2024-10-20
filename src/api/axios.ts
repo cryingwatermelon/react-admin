@@ -1,55 +1,67 @@
 import axios, {
-  type AxiosInstance,
-  type AxiosResponse,
-  type AxiosRequestConfig,
-} from "axios";
+	type AxiosResponse,
+	type AxiosInstance,
+	type AxiosRequestConfig,
+} from 'axios'
 
-const baseUrl = "/api";
+const baseUrl = '/api'
+
 class HttpRequest {
-  baseUrl: string;
-  constructor(baseUrl: string) {
-    this.baseUrl = baseUrl;
-  }
+	baseUrl: string
 
-  getInsideConfig() {
-    const config = {
-      baseUrl: this.baseUrl,
-      header: {},
-    };
-    return config;
-  }
-  interceptors(instance: AxiosInstance) {
-    // 添加请求拦截器
-    instance.interceptors.request.use(
-      (config) => {
-        return config;
-      },
-      (error) => {
-        return error;
-      }
-    );
+	constructor(baseUrl: string) {
+		this.baseUrl = baseUrl
+	}
 
-    // 添加响应拦截器
-    instance.interceptors.response.use(
-      (response) => {
-        return response;
-      },
-      (error) => {
-        // console.log(error, "error");
-        alert(error);
-        return Promise.reject(error);
-      }
-    );
-  }
-  request(options: AxiosInstance) {
-    const instance = axios.create();
-    // options = { ...this.getInsideConfig(), ...options };
-    this.interceptors(instance);
-    // return instance({ ...this.getInsideConfig(), ...options });
-    return instance(Object.assign(this.getInsideConfig(), options));
-  }
+	getInsideConfig() {
+		const config = {
+			baseUrl: this.baseUrl,
+			header: {},
+		}
+		return config
+	}
+
+	interceptors(instance: AxiosInstance) {
+		// 添加请求拦截器
+		instance.interceptors.request.use(
+			(config) => {
+				return config
+			},
+			(error) => {
+				return error
+			},
+		)
+
+		// 添加响应拦截器
+		instance.interceptors.response.use(
+			(response) => {
+				return response
+			},
+			(error) => {
+				// console.log(error, "error");
+				alert(error)
+				return Promise.reject(error)
+			},
+		)
+	}
+
+	async request<D>(options: AxiosRequestConfig<D>) {
+		const instance = axios.create()
+		// options = { ...this.getInsideConfig(), ...options };
+		this.interceptors(instance)
+		// return instance({ ...this.getInsideConfig(), ...options });
+		const response = await instance<D>(
+			Object.assign(this.getInsideConfig(), options),
+		)
+		return this.responseBody(response)
+	}
+
+	responseBody<T>(response: AxiosResponse<T>) {
+		return response
+	}
 }
-export default new HttpRequest(baseUrl);
+
+export default new HttpRequest(baseUrl)
 
 //导出Request可以用来自定义传递配置来创建实例
 // export class Request {
