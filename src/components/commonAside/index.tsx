@@ -1,5 +1,5 @@
 import * as AllIcons from "@ant-design/icons";
-import { Menu, Layout } from "antd";
+import { Menu, Layout, type MenuProps } from "antd";
 import type { IconNames } from "@/config/index";
 
 import "@/main.css";
@@ -39,10 +39,12 @@ const CommonAside = ({ collapsed }: commonAsideProps) => {
     }
     return child;
   });
-  // const onClick: MenuProps["onClick"] = () => {
-  // console.log("click", e);
-  // };
-  // console.log(collapsed, "commonAside");
+  const onClick: MenuProps["onClick"] = (e) => {
+    // const data;
+    // MenuConfig.forEach((item) => {});
+    console.log(e, "menu click");
+  };
+
   return (
     <Sider trigger={null} collapsible collapsed={collapsed}>
       <h3 className="app-name">{collapsed ? "后台" : "通用后台管理系统"}</h3>
@@ -71,7 +73,7 @@ const CommonAside = ({ collapsed }: commonAsideProps) => {
         style={{
           height: "100%",
         }}
-        // onClick={onClick}
+        onClick={onClick}
       />
     </Sider>
   );

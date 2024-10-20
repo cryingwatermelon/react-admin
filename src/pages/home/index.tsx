@@ -1,10 +1,8 @@
 import { Col, Row, Card, Table } from "antd";
 import { getData } from "@/api";
-import type { IconNames } from "@/config";
-import * as AllIcons from "@ant-design/icons";
 import type { CountData } from "@/config";
-import * as echarts from "echarts";
-import { useRef } from "react";
+import { getElementByName } from "@/utils/function";
+import MyEcharts from "@/components/echarts/index";
 
 const url =
   "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQvq0Th12s2DdB94TomTrlK3rEHVPKSF_Hj4Q&s";
@@ -66,84 +64,42 @@ const countData: CountData[] = [
     color: "#5ab1ef",
   },
 ];
-//动态获取icon
-// const iconToElement = (name: IconNames, width?: string) => {
-//   const AntdIcon = AllIcons[name];
-//   return (
-//     <AntdIcon
-//       value=""
-//       style={{ fontSize: width, textAlign: "center", marginTop: "10px" }}
-//     />
-//   );
-// };
 
-const getElementByName = (
-  name: IconNames,
-  props: React.HTMLAttributes<HTMLSpanElement>
-) => {
-  const AntdIcon = AllIcons[name];
-  return <AntdIcon {...props} value="" />;
-};
-// const GetElementByName = (
-//   name: IconNames,
-//   props: React.HTMLAttributes<HTMLSpanElement>
-// ) => {
-//   const AntdIcon = AllIcons[name];
-//   return <AntdIcon {...props} value="" />;
-// };
 const Home = () => {
+  // 创建echart响应数据
+  const [echartData, setEchartData] = useState({
+    xData: [1, 2, 3],
+    series: [1, 2, 3],
+  });
   useEffect(() => {
     getData().then(({ data }) => {
-      // console.log(res.data, "home_res");
-      const { tableData } = data.data;
+      const { tableData, orderData } = data.data;
+      console.log(orderData, "orderData");
       setTableData(tableData);
-      // console.log(data.data.tableData, "tableData");
+      //对于echarts数据的组装
+      const order = orderData;
+      //x轴的数据
+      const xData = order.date;
+      //series的数据
+      const keyArray = Object.keys(order.data[0]);
+      const series = [];
+      for (const key of keyArray) {
+        series.push({
+          name: key,
+          data: order.data.map((item) => item[key]),
+          type: "line",
+        });
+      }
     });
-  });
+    setEchartData({
+      order: {
+        xData,
+        series,
+      },
+    });
+  }, []);
   const [tableData, setTableData] = useState();
 
-  // let myChart = echarts.init(document.getElementById("main"));
-  // // 绘制图表
-  // myChart.setOption({
-  //   title: {
-  //     text: "ECharts 入门示例",
-  //   },
-  //   tooltip: {},
-  //   xAxis: {
-  //     data: ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"],
-  //   },
-  //   yAxis: {},
-  //   series: [
-  //     {
-  //       name: "销量",
-  //       type: "bar",
-  //       data: [5, 20, 36, 10, 10, 20],
-  //     },
-  //   ],
-  // });
-
-  const chartsRef = useRef(null);
-  useEffect(() => {
-    const myChart = echarts.init(chartsRef.current);
-    myChart.setOption({
-      title: {
-        text: "ECharts 入门示例",
-      },
-      tooltip: {},
-      xAxis: {
-        data: ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"],
-      },
-      yAxis: {},
-      series: [
-        {
-          name: "销量",
-          type: "bar",
-          data: [5, 20, 36, 10, 10, 20],
-        },
-      ],
-    });
-    return () => myChart.dispose();
-  }, []);
   return (
     <>
       <Row className="mb-[10px] font-[32px]">
@@ -206,8 +162,11 @@ const Home = () => {
               );
             })}
           </div>
-          {/* <div id="main" style={{ height: "300px" }} /> */}
-          <div ref={chartsRef} style={{ height: "300px" }} />
+          <MyEcharts
+            chartData={echartData.order}
+            style={{ height: "280px" }}
+            isAxisChart={false}
+          />
         </Col>
       </Row>
     </>
