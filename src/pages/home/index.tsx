@@ -90,7 +90,7 @@ const Home = () => {
 
 	useEffect(() => {
 		getData().then(({ data }) => {
-			const { tableData, orderData } = data.data
+			const { tableData, orderData } = data
 			// console.log(orderData, 'orderData')
 			setTableData(tableData)
 			//对于echarts数据的组装

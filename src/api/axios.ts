@@ -57,7 +57,7 @@ class HttpRequest {
 	}
 
 	responseBody<T>(response: AxiosResponse<T>) {
-		return response
+		return response.data
 	}
 }
 
