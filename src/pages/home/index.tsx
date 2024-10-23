@@ -90,8 +90,8 @@ const Home = () => {
 
 	useEffect(() => {
 		getData().then(({ data }) => {
-			const { tableData, orderData } = data
-			// console.log(orderData, 'orderData')
+			const { tableData, orderData, userData, videoData } = data
+			// console.log(data, 'data')
 			setTableData(tableData)
 			//对于echarts数据的组装
 			const order = orderData
@@ -109,6 +109,30 @@ const Home = () => {
 				order: {
 					xData,
 					series,
+				},
+				user: {
+					xData: userData.map((item) => item.date),
+					series: [
+						{
+							name: '新增用户',
+							data: userData.map((item) => item.new),
+							type: 'bar',
+						},
+						{
+							name: '活跃用户',
+							data: userData.map((item) => item.active),
+							type: 'bar',
+						},
+					],
+				},
+				video: {
+					series: [
+						{
+							data: videoData,
+							type: 'pie',
+						},
+					],
+					xData: [],
 				},
 			})
 		})
@@ -174,12 +198,29 @@ const Home = () => {
 							)
 						})}
 					</div>
-					{echartData.order && (
-						<MyEcharts
-							chartData={echartData.order}
-							style={{ height: '280px' }}
-						/>
-					)}
+					<div>
+						{echartData.order && (
+							<MyEcharts
+								chartData={echartData.order}
+								style={{ height: '280px' }}
+							/>
+						)}
+					</div>
+					<div className="mt-[20px] flex">
+						{echartData.user && (
+							<MyEcharts
+								chartData={echartData.user}
+								style={{ height: '240px', width: '50%' }}
+							/>
+						)}
+						{echartData.video && (
+							<MyEcharts
+								chartData={echartData.video}
+								style={{ height: '260px', width: '50%' }}
+								isAxisChart={false}
+							/>
+						)}
+					</div>
 				</Col>
 			</Row>
 		</>

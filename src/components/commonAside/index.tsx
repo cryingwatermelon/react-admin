@@ -1,6 +1,7 @@
 import type { IconNames } from '@/config/index'
 import * as AllIcons from '@ant-design/icons'
 import { Layout, Menu, type MenuProps } from 'antd'
+import { useNavigate } from 'react-router-dom'
 
 import '@/main.css'
 import MenuConfig from '@/config/index'
@@ -12,12 +13,9 @@ type commonAsideProps = {
 	collapsed: boolean
 }
 const CommonAside = ({ collapsed }: commonAsideProps) => {
-	// const [collapsed, setCollapsed] = useState(false);
+	const navigate = useNavigate()
 	//处理菜单数据
 	const iconToElement = (name: IconNames) => {
-		// return React.createElement(
-		//   AllIcons[name] as React.ClassType<any, any, any>
-		// );
 		const AntdIcon = AllIcons[name]
 		return <AntdIcon value="" />
 	}
@@ -39,10 +37,9 @@ const CommonAside = ({ collapsed }: commonAsideProps) => {
 		}
 		return child
 	})
-	const onClick: MenuProps['onClick'] = (e) => {
-		// const data;
-		// MenuConfig.forEach((item) => {});
-		console.log(e, 'menu click')
+	const menuClick: MenuProps['onClick'] = (e) => {
+		// console.log(e, 'menu click')
+		navigate(e.key)
 	}
 
 	return (
@@ -52,28 +49,11 @@ const CommonAside = ({ collapsed }: commonAsideProps) => {
 				theme="dark"
 				mode="inline"
 				defaultSelectedKeys={['/home']}
-				// items={[
-				//   {
-				//     key: "1",
-				//     icon: <UserOutlined />,
-				//     label: "nav 1",
-				//   },
-				//   {
-				//     key: "2",
-				//     icon: <VideoCameraOutlined />,
-				//     label: "nav 2",
-				//   },
-				//   {
-				//     key: "3",
-				//     icon: <UploadOutlined />,
-				//     label: "nav 3",
-				//   },
-				// ]}
 				items={items}
 				style={{
 					height: '100%',
 				}}
-				onClick={onClick}
+				onClick={menuClick}
 			/>
 		</Sider>
 	)

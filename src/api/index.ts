@@ -10,3 +10,11 @@ export const getData = () => {
 		method: 'get',
 	})
 }
+
+export const getUser = (params: string) => {
+	return http.request({
+		url: '/user/getUser',
+		method: 'get',
+		params,
+	})
+}

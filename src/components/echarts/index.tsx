@@ -59,7 +59,7 @@ const normalOption: EChartsOption = {
 type EchartsProps = {
 	style: React.CSSProperties
 	chartData: {
-		xData: string[]
+		xData?: string[]
 		series: SeriesOption[]
 	}
 	isAxisChart?: boolean
