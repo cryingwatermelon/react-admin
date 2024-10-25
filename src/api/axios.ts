@@ -7,21 +7,20 @@ import axios, {
 const baseUrl = '/api'
 
 class HttpRequest {
-	baseUrl: string
-
-	constructor(baseUrl: string) {
-		this.baseUrl = baseUrl
+	instance: AxiosInstance
+	//基础配置
+	baseConfig: AxiosRequestConfig = {
+		baseURL: baseUrl,
+		timeout: 6000,
 	}
 
-	getInsideConfig() {
-		const config = {
-			baseUrl: this.baseUrl,
-			header: {},
-		}
-		return config
+	constructor(config: AxiosRequestConfig) {
+		//使用axios.create创建axios实例，配置为基础配置和传递进来的config
+		this.instance = axios.create(Object.assign(this.baseConfig, config))
+		this.interceptors(this.instance)
 	}
 
-	interceptors(instance: AxiosInstance) {
+	private interceptors(instance: AxiosInstance) {
 		// 添加请求拦截器
 		instance.interceptors.request.use(
 			(config) => {
@@ -45,23 +44,17 @@ class HttpRequest {
 		)
 	}
 
-	async request<D>(options: AxiosRequestConfig<D>) {
-		const instance = axios.create()
-		// options = { ...this.getInsideConfig(), ...options };
-		this.interceptors(instance)
-		// return instance({ ...this.getInsideConfig(), ...options });
-		const response = await instance<D>(
-			Object.assign(this.getInsideConfig(), options),
-		)
+	public async request<T>(options: AxiosRequestConfig) {
+		const response = await this.instance.request<T>(options)
 		return this.responseBody(response)
 	}
 
-	responseBody<T>(response: AxiosResponse<T>) {
+	private responseBody<T>(response: AxiosResponse<T>) {
 		return response.data
 	}
 }
 
-export default new HttpRequest(baseUrl)
+export default new HttpRequest({})
 
 //导出Request可以用来自定义传递配置来创建实例
 // export class Request {
