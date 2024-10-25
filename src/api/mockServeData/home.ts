@@ -2,22 +2,35 @@
 import Mock from 'mockjs'
 
 // 图表数据
-const List: any[] = []
+const List: Record<string, number>[] = Array.from<null, Record<string, number>>(
+	{ length: 7 },
+	() =>
+		Mock.mock({
+			苹果: Mock.Random.float(100, 8000, 0, 0),
+			vivo: Mock.Random.float(100, 8000, 0, 0),
+			oppo: Mock.Random.float(100, 8000, 0, 0),
+			魅族: Mock.Random.float(100, 8000, 0, 0),
+			三星: Mock.Random.float(100, 8000, 0, 0),
+			小米: Mock.Random.float(100, 8000, 0, 0),
+		}),
+)
+
+//Mock.Random.float 产生随机数100到8000之间 保留小数 最小0位 最大0位
+// for (let i = 0; i < 7; i++) {
+// 	List.push(
+// 		Mock.mock({
+// 			苹果: Mock.Random.float(100, 8000, 0, 0),
+// 			vivo: Mock.Random.float(100, 8000, 0, 0),
+// 			oppo: Mock.Random.float(100, 8000, 0, 0),
+// 			魅族: Mock.Random.float(100, 8000, 0, 0),
+// 			三星: Mock.Random.float(100, 8000, 0, 0),
+// 			小米: Mock.Random.float(100, 8000, 0, 0),
+// 		}),
+// 	)
+// }
+
 export default {
 	getStatisticalData: () => {
-		//Mock.Random.float 产生随机数100到8000之间 保留小数 最小0位 最大0位
-		for (let i = 0; i < 7; i++) {
-			List.push(
-				Mock.mock({
-					苹果: Mock.Random.float(100, 8000, 0, 0),
-					vivo: Mock.Random.float(100, 8000, 0, 0),
-					oppo: Mock.Random.float(100, 8000, 0, 0),
-					魅族: Mock.Random.float(100, 8000, 0, 0),
-					三星: Mock.Random.float(100, 8000, 0, 0),
-					小米: Mock.Random.float(100, 8000, 0, 0),
-				}),
-			)
-		}
 		return {
 			code: 20000,
 			data: {

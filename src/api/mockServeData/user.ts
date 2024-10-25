@@ -1,10 +1,18 @@
 import Mock from 'mockjs'
 
+type TJSONValue = number | string | boolean | null
+
+type TJSONArray = TJSONArray[] | TJSONValue[] | TJSONMap[]
+
+interface TJSONMap {
+	[key: string]: TJSONValue | TJSONArray | TJSONMap
+}
+
 // get请求从config.url获取参数，post从config.body中获取参数
-function param2Obj(url: string) {
+function param2Obj<T extends TJSONMap>(url: string): T {
 	const search = url.split('?')[1]
 	if (!search) {
-		return {}
+		return Object.create({})
 	}
 	return JSON.parse(
 		`{"${decodeURIComponent(search)
@@ -14,43 +22,68 @@ function param2Obj(url: string) {
 	)
 }
 
-let List: any[] = []
-const count = 200
+type TGender = 0 | 1
 
-for (let i = 0; i < count; i++) {
-	List.push(
-		Mock.mock({
-			id: Mock.Random.guid(),
-			name: Mock.Random.cname(),
-			addr: Mock.mock('@county(true)'),
-			'age|18-60': 1,
-			birth: Mock.Random.date(),
-			sex: Mock.Random.integer(0, 1),
-		}),
-	)
+export type TUser = {
+	id: string
+	name: string
+	addr: string
+	age: number
+	birth: string
+	sex: TGender
 }
 
-type userConfigProps = {
+let List: TUser[] = Array.from<null, TUser>({ length: 200 }, () =>
+	Mock.mock({
+		id: Mock.Random.guid(),
+		name: Mock.Random.cname(),
+		addr: Mock.mock('@county(true)'),
+		age: Mock.Random.integer(18, 60),
+		birth: Mock.Random.date(),
+		sex: Mock.Random.integer(0, 1),
+	}),
+)
+
+// const count = 200
+// for (let i = 0; i < count; i++) {
+// 	List.push(
+// 		Mock.mock({
+// 			id: Mock.Random.guid(),
+// 			name: Mock.Random.cname(),
+// 			addr: Mock.mock('@county(true)'),
+// 			age: Mock.Random.integer(18, 60),
+// 			birth: Mock.Random.date(),
+// 			sex: Mock.Random.integer(0, 1),
+// 		}),
+// 	)
+// }
+
+type TGetMethodProps = {
 	url: string
+}
+
+type TPostMethodProps = {
 	body: string
 }
 
-export type userDataType = {
-	name: string
-	age: number
-	sex: number
-	birth: Date
-	addr: string
+export type TGetUserListParams = {
+	name?: string
+	page?: number
+	limit?: number
 }
+
 export default {
 	/**
 	 * 获取列表
 	 * 要带参数 name, page, limt; name可以不填, page,limit有默认值。
-	 * @param name, page, limit
-	 * @return {{code: number, count: number, data: *[]}}
+	 * @param {TGetMethodProps} config name, page, limit
 	 */
-	getUserList: (config: userConfigProps) => {
-		const { name, page = 1, limit = 20 } = param2Obj(config.url)
+	getUserList: (config: TGetMethodProps) => {
+		const {
+			name,
+			page = 1,
+			limit = 20,
+		} = param2Obj<TGetUserListParams>(config.url)
 		const mockList = List.filter((user) => {
 			if (
 				name &&
@@ -69,20 +102,16 @@ export default {
 			list: pageList,
 		}
 	},
+
 	/**
 	 * 增加用户
-	 * @param name, addr, age, birth, sex
-	 * @return {{code: number, data: {message: string}}}
+	 * @param {TPostMethodProps} config name, addr, age, birth, sex
 	 */
-	createUser: (config: userConfigProps) => {
-		const { name, addr, age, birth, sex } = JSON.parse(config.body)
+	createUser: (config: TPostMethodProps) => {
+		const newValue = JSON.parse(config.body) as Omit<TUser, 'id'>
 		List.unshift({
 			id: Mock.Random.guid(),
-			name: name,
-			addr: addr,
-			age: age,
-			birth: birth,
-			sex: sex,
+			...newValue,
 		})
 		return {
 			code: 20000,
@@ -91,13 +120,13 @@ export default {
 			},
 		}
 	},
+
 	/**
 	 * 删除用户
-	 * @param id
-	 * @return {*}
+	 * @param {TPostMethodProps} config id
 	 */
-	deleteUser: (config: userConfigProps) => {
-		const { id } = JSON.parse(config.body)
+	deleteUser: (config: TPostMethodProps) => {
+		const { id } = JSON.parse(config.body) as Pick<TUser, 'id'>
 		if (!id) {
 			return {
 				code: -999,
@@ -110,15 +139,15 @@ export default {
 			message: '删除成功',
 		}
 	},
+
 	/**
 	 * 批量删除
 	 * @param config
-	 * @return {{code: number, data: {message: string}}}
 	 */
-	batchremove: (config: userConfigProps) => {
-		let { ids } = param2Obj(config.url)
-		ids = ids.split(',')
-		List = List.filter((u) => !ids.includes(u.id))
+	batchremove: (config: TGetMethodProps) => {
+		const { ids } = param2Obj<{ ids: string }>(config.url)
+		const batchRemoveIds = ids.split(',')
+		List = List.filter((u) => !batchRemoveIds.includes(u.id))
 		return {
 			code: 20000,
 			data: {
@@ -126,23 +155,21 @@ export default {
 			},
 		}
 	},
+
 	/**
 	 * 修改用户
-	 * @param id, name, addr, age, birth, sex
-	 * @return {{code: number, data: {message: string}}}
+	 * @param {TPostMethodProps} config id, name, addr, age, birth, sex
 	 */
-	updateUser: (config: userConfigProps) => {
-		const { id, name, addr, age, birth, sex } = JSON.parse(config.body)
-		const sex_num = Number.parseInt(sex)
-		List.some((u) => {
-			if (u.id === id) {
-				u.name = name
-				u.addr = addr
-				u.age = age
-				u.birth = birth
-				u.sex = sex_num
-				return true
+	updateUser: (config: TPostMethodProps) => {
+		const newValue = JSON.parse(config.body) as TUser
+		List = List.map((u) => {
+			if (u.id === newValue.id) {
+				return {
+					...newValue,
+					id: u.id,
+				}
 			}
+			return u
 		})
 		return {
 			code: 20000,
