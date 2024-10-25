@@ -14,7 +14,7 @@ function param2Obj(url: string) {
 	)
 }
 
-let List = []
+let List: any[] = []
 const count = 200
 
 for (let i = 0; i < count; i++) {
@@ -30,11 +30,17 @@ for (let i = 0; i < count; i++) {
 	)
 }
 
-type getUserProps = {
+type userConfigProps = {
 	url: string
-	// name: string
-	// page: number
-	// limit: number
+	body: string
+}
+
+export type userDataType = {
+	name: string
+	age: number
+	sex: number
+	birth: Date
+	addr: string
 }
 export default {
 	/**
@@ -43,7 +49,7 @@ export default {
 	 * @param name, page, limit
 	 * @return {{code: number, count: number, data: *[]}}
 	 */
-	getUserList: (config: getUserProps) => {
+	getUserList: (config: userConfigProps) => {
 		const { name, page = 1, limit = 20 } = param2Obj(config.url)
 		const mockList = List.filter((user) => {
 			if (
@@ -55,7 +61,7 @@ export default {
 			return true
 		})
 		const pageList = mockList.filter(
-			(item, index) => index < limit * page && index >= limit * (page - 1),
+			(_, index) => index < limit * page && index >= limit * (page - 1),
 		)
 		return {
 			code: 20000,
@@ -68,7 +74,7 @@ export default {
 	 * @param name, addr, age, birth, sex
 	 * @return {{code: number, data: {message: string}}}
 	 */
-	createUser: (config) => {
+	createUser: (config: userConfigProps) => {
 		const { name, addr, age, birth, sex } = JSON.parse(config.body)
 		List.unshift({
 			id: Mock.Random.guid(),
@@ -90,19 +96,18 @@ export default {
 	 * @param id
 	 * @return {*}
 	 */
-	deleteUser: (config) => {
+	deleteUser: (config: userConfigProps) => {
 		const { id } = JSON.parse(config.body)
 		if (!id) {
 			return {
 				code: -999,
 				message: '参数不正确',
 			}
-		} else {
-			List = List.filter((u) => u.id !== id)
-			return {
-				code: 20000,
-				message: '删除成功',
-			}
+		}
+		List = List.filter((u) => u.id !== id)
+		return {
+			code: 20000,
+			message: '删除成功',
 		}
 	},
 	/**
@@ -110,7 +115,7 @@ export default {
 	 * @param config
 	 * @return {{code: number, data: {message: string}}}
 	 */
-	batchremove: (config) => {
+	batchremove: (config: userConfigProps) => {
 		let { ids } = param2Obj(config.url)
 		ids = ids.split(',')
 		List = List.filter((u) => !ids.includes(u.id))
@@ -126,9 +131,9 @@ export default {
 	 * @param id, name, addr, age, birth, sex
 	 * @return {{code: number, data: {message: string}}}
 	 */
-	updateUser: (config) => {
+	updateUser: (config: userConfigProps) => {
 		const { id, name, addr, age, birth, sex } = JSON.parse(config.body)
-		const sex_num = parseInt(sex)
+		const sex_num = Number.parseInt(sex)
 		List.some((u) => {
 			if (u.id === id) {
 				u.name = name

@@ -1,18 +1,33 @@
-import { Button, Form, Input, Modal, Popconfirm, Table } from 'antd'
+import {
+	Button,
+	DatePicker,
+	Form,
+	Input,
+	InputNumber,
+	Modal,
+	Popconfirm,
+	Radio,
+	Table,
+} from 'antd'
 import { getUser } from '@/api/index'
+import type { userDataType } from '@/api/mockServeData/user'
+import type { RadioChangeEvent, DatePickerProps, TableColumnsType } from 'antd'
+import dayjs from 'dayjs'
+
 const User = () => {
 	//定义getUserList的参数
 	const [listData, setListData] = useState({
 		name: '',
 	})
 	const [tableData, setTableData] = useState([])
+	const [sex, setSex] = useState(0)
 	//0代表新增 1代表编辑
 	const [modalType, setModalType] = useState(0)
 	const [isModalOpen, setIsModalOpen] = useState(false)
 	//创建form实例
 	const [form] = Form.useForm()
 
-	const handleClick = (type: string, rowData?) => {
+	const handleClick = (type: string, rowData?: userDataType) => {
 		setIsModalOpen(!isModalOpen)
 		if (type === 'add') {
 			setModalType(0)
@@ -22,23 +37,39 @@ const User = () => {
 		}
 	}
 
-	const handleFinish = (e) => {
+	const handleFinish = (e: any) => {
 		setListData({
 			name: e.name,
 		})
 	}
 	const getTableData = () => {
 		getUser().then((data) => {
-			console.log(data)
 			setTableData(data.list)
 		})
 	}
-	const handleDelete = (rowData) => {}
-	const handleOk = () => {}
+	const handleDelete = (rowData: userDataType) => {}
+	const handleOk = () => {
+		//表单校验
+		form.validateFields().then((value) => {
+			//对表单日期进行单独的校验
+			value.birth = dayjs(value.birth).format('YYYY-MM-DD')
+			// console.log(value, 'valid')
+			//调接口实现数据更新
+			// if()
+		})
+	}
 	const handleCancel = () => {
 		setIsModalOpen(false)
 	}
-	const columns = [
+	const changeSex = (e: RadioChangeEvent) => {
+		console.log('radio checked', e.target.value)
+		setSex(e.target.value)
+	}
+	const changeBirth: DatePickerProps['onChange'] = (date, dateString) => {
+		console.log(date, dateString)
+	}
+
+	const columns: TableColumnsType<userDataType> = [
 		{
 			title: '姓名',
 			dataIndex: 'name',
@@ -64,7 +95,7 @@ const User = () => {
 		},
 		{
 			title: '操作',
-			render: (rowData) => {
+			render: (rowData: userDataType) => {
 				return (
 					<div className="flex">
 						<Button
@@ -131,6 +162,44 @@ const User = () => {
 						rules={[{ required: true, message: '请输入姓名' }]}
 					>
 						<Input placeholder="请输入姓名" />
+					</Form.Item>
+					<Form.Item
+						label="年龄"
+						name="age"
+						rules={[
+							{
+								required: true,
+								type: 'number',
+								min: 0,
+								max: 99,
+								message: '年龄不能为负数',
+							},
+						]}
+					>
+						<InputNumber />
+					</Form.Item>
+					<Form.Item
+						label="性别"
+						name="sex"
+						rules={[{ required: true, message: '请选择性别' }]}
+					>
+						<Radio.Group onChange={changeSex} value={sex}>
+							<Radio value={0}>男</Radio>
+							<Radio value={1}>女</Radio>
+						</Radio.Group>
+					</Form.Item>
+					<Form.Item label="出生日期" name="birth">
+						<DatePicker onChange={changeBirth} format="YYYY-MM-DD" />
+					</Form.Item>
+					<Form.Item
+						label="地址"
+						name="addr"
+						rules={[{ required: true, message: '请输入地址' }]}
+					>
+						<Input.TextArea
+							placeholder="请输入地址"
+							autoSize={{ maxRows: 6 }}
+						/>
 					</Form.Item>
 				</Form>
 			</Modal>
