@@ -1,78 +1,70 @@
-import type { IconNames, Item } from '@/config/index'
-import * as AllIcons from '@ant-design/icons'
 import { Layout, Menu, type MenuProps } from 'antd'
 import { useNavigate } from 'react-router-dom'
-import { useDispatch } from 'react-redux'
 import '@/main.css'
 import MenuConfig from '@/config/index'
 
-import type { ItemType, SubMenuType } from 'antd/es/menu/interface'
-import { selectMenuList } from '@/store/reducer/tab'
+import { useAppDispatch } from '@/store'
+import { type TTab, setCurrentMenu, setMenuList } from '@/store/reducer/tab'
+import { iconToElement } from '@/utils/function'
+import type { ItemType } from 'antd/es/menu/interface'
 
 const { Sider } = Layout
+
 type commonAsideProps = {
   collapsed: boolean
 }
+
 const CommonAside = ({ collapsed }: commonAsideProps) => {
   const navigate = useNavigate()
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
+  const location = useLocation()
 
   //添加数据到store
-  const setTabList = (value) => {
-    dispatch(selectMenuList(value))
+  const setTabList = (value: TTab) => {
+    dispatch(setMenuList(value))
   }
 
   //处理菜单数据
-  const iconToElement = (name: IconNames) => {
-    const AntdIcon = AllIcons[name]
-    return <AntdIcon value="" />
-  }
-
-  const items: ItemType[] = MenuConfig.map((icon) => {
-    const child = {
-      key: icon.path,
-      icon: iconToElement(icon.icon),
-      label: icon.label,
+  const items: ItemType[] = MenuConfig.map((item) => {
+    return {
+      key: item.path,
+      icon: iconToElement(item.icon),
+      label: item.label,
+      children: item.children?.length
+        ? item.children.map((item) => {
+            return {
+              key: item.path,
+              label: item.label,
+              icon: iconToElement(item.icon),
+            }
+          })
+        : undefined,
     }
-    if (icon.children) {
-      ;(child as SubMenuType).children = icon.children.map((item) => {
-        return {
-          key: item.path,
-          label: item.label,
-          icon: iconToElement(item.icon),
-        }
-      })
-    }
-    return child
   })
 
   const menuClick: MenuProps['onClick'] = (e) => {
-    // console.log(e, 'menu click')
-    const data: Item = {
-      name: 'home',
-      path: '/home',
-      label: '首页',
-      icon: 'HomeOutlined',
-      url: '/home/index',
-    }
-    for (const items of MenuConfig) {
-      //找到当前的数据（一级路由）
-      if (items.path === e.keyPath[e.keyPath.length - 1]) {
-        Object.assign(data, items)
-        //如果长度大于一，说明有子菜单
-        if (e.keyPath.length > 1 && items.children) {
-          const newData = items.children.find((child) => {
-            return child.path === e.key
-          })
-          if (newData) Object.assign(data, newData)
+    const data = MenuConfig.reduce<TTab>((acc, item) => {
+      //如果长度大于一，说明有子菜单
+      if (e.keyPath.length > 1) {
+        const childItem = item.children?.find((child) => {
+          return child.path === e.key
+        })
+        if (childItem) {
+          return childItem
         }
       }
-    }
+      //找到当前的数据（一级路由）
+      if (e.key === item.path) {
+        return item
+      }
+      return acc
+    }, Object.create({}))
     setTabList({
       path: data.path,
       name: data.name,
       label: data.label,
     })
+    setCurrentMenu(data)
     navigate(e.key)
   }
 
@@ -83,6 +75,7 @@ const CommonAside = ({ collapsed }: commonAsideProps) => {
         theme="dark"
         mode="inline"
         defaultSelectedKeys={['/home']}
+        selectedKeys={[location.pathname]}
         items={items}
         style={{
           height: '100%',
