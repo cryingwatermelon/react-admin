@@ -2,9 +2,9 @@ import tabReducer from '@/store/reducer/tab'
 import { configureStore } from '@reduxjs/toolkit'
 
 export const store = configureStore({
-	reducer: {
-		tab: tabReducer,
-	},
+  reducer: {
+    tab: tabReducer,
+  },
 })
 
 // Infer the `RootState` and `AppDispatch` types from the store itself

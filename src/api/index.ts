@@ -11,40 +11,40 @@ type TUserEditData = ReturnType<typeof user.updateUser>
 type TUserDeleteData = ReturnType<typeof user.deleteUser>
 
 export const getData = () => {
-	return http.request<THomeData>({
-		url: '/home/getData',
-		method: 'get',
-	})
+  return http.request<THomeData>({
+    url: '/home/getData',
+    method: 'get',
+  })
 }
 
 export const getUser = (params?: TGetUserListParams) => {
-	return http.request<TUserData>({
-		url: '/user/getUser',
-		method: 'get',
-		params,
-	})
+  return http.request<TUserData>({
+    url: '/user/getUser',
+    method: 'get',
+    params,
+  })
 }
 
 export const addUser = (data: TUser) => {
-	return http.request<TUserAddData>({
-		url: '/user/add',
-		method: 'post',
-		data,
-	})
+  return http.request<TUserAddData>({
+    url: '/user/add',
+    method: 'post',
+    data,
+  })
 }
 
 export const editUser = (data: TUser) => {
-	return http.request<TUserEditData>({
-		url: '/user/edit',
-		method: 'post',
-		data,
-	})
+  return http.request<TUserEditData>({
+    url: '/user/edit',
+    method: 'post',
+    data,
+  })
 }
 
 export const deleteUser = (data: Pick<TUser, 'id'>) => {
-	return http.request<TUserDeleteData>({
-		url: '/user/del',
-		method: 'post',
-		data,
-	})
+  return http.request<TUserDeleteData>({
+    url: '/user/del',
+    method: 'post',
+    data,
+  })
 }

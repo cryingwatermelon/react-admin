@@ -12,9 +12,9 @@ import * as AllIcons from '@ant-design/icons'
 // };
 
 export const iconToElement = (
-	name: IconNames,
-	props: React.HTMLAttributes<HTMLSpanElement> = {},
+  name: IconNames,
+  props: React.HTMLAttributes<HTMLSpanElement> = {},
 ) => {
-	const AntdIcon = AllIcons[name]
-	return <AntdIcon {...props} />
+  const AntdIcon = AllIcons[name]
+  return <AntdIcon {...props} />
 }

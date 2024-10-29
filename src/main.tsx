@@ -8,9 +8,9 @@ import { store } from '@/store'
 import '@/api/mock'
 
 createRoot(document.getElementById('root')!).render(
-	<StrictMode>
-		<Provider store={store}>
-			<RouterProvider router={router} />
-		</Provider>
-	</StrictMode>,
+  <StrictMode>
+    <Provider store={store}>
+      <RouterProvider router={router} />
+    </Provider>
+  </StrictMode>,
 )
