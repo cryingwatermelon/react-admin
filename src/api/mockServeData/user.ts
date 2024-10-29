@@ -1,10 +1,15 @@
 import Mock from 'mockjs'
 
+type TJSONValue = number | string | boolean | null
+type TJSONArray = TJSONArray[] | TJSONValue[] | TJSONMap[]
+interface TJSONMap {
+	[key: string]: TJSONValue | TJSONArray | TJSONMap
+}
 // get请求从config.url获取参数，post从config.body中获取参数
-function param2Obj(url: string) {
+function param2Obj<T extends TJSONMap>(url: string): T {
 	const search = url.split('?')[1]
 	if (!search) {
-		return {}
+		return Object.create({})
 	}
 	return JSON.parse(
 		`{"${decodeURIComponent(search)
@@ -14,7 +19,7 @@ function param2Obj(url: string) {
 	)
 }
 
-let List: any[] = []
+let List: userDataType[] = []
 const count = 200
 
 for (let i = 0; i < count; i++) {
@@ -30,17 +35,24 @@ for (let i = 0; i < count; i++) {
 	)
 }
 
-type userConfigProps = {
-	url: string
-	body: string
-}
-
 export type userDataType = {
+	id: string
 	name: string
 	age: number
 	sex: number
 	birth: Date
 	addr: string
+}
+type TGetMethodProps = {
+	url: string
+}
+type TPostMethodProps = {
+	body: string
+}
+export type TGetUserListParams = {
+	name?: string
+	page?: number
+	limit?: number
 }
 export default {
 	/**
@@ -49,8 +61,12 @@ export default {
 	 * @param name, page, limit
 	 * @return {{code: number, count: number, data: *[]}}
 	 */
-	getUserList: (config: userConfigProps) => {
-		const { name, page = 1, limit = 20 } = param2Obj(config.url)
+	getUserList: (config: TGetMethodProps) => {
+		const {
+			name,
+			page = 1,
+			limit = 20,
+		} = param2Obj<TGetUserListParams>(config.url)
 		const mockList = List.filter((user) => {
 			if (
 				name &&
@@ -74,7 +90,7 @@ export default {
 	 * @param name, addr, age, birth, sex
 	 * @return {{code: number, data: {message: string}}}
 	 */
-	createUser: (config: userConfigProps) => {
+	createUser: (config: TPostMethodProps) => {
 		const { name, addr, age, birth, sex } = JSON.parse(config.body)
 		List.unshift({
 			id: Mock.Random.guid(),
@@ -96,7 +112,7 @@ export default {
 	 * @param id
 	 * @return {*}
 	 */
-	deleteUser: (config: userConfigProps) => {
+	deleteUser: (config: TPostMethodProps) => {
 		const { id } = JSON.parse(config.body)
 		if (!id) {
 			return {
@@ -115,10 +131,10 @@ export default {
 	 * @param config
 	 * @return {{code: number, data: {message: string}}}
 	 */
-	batchremove: (config: userConfigProps) => {
-		let { ids } = param2Obj(config.url)
-		ids = ids.split(',')
-		List = List.filter((u) => !ids.includes(u.id))
+	batchremove: (config: TGetMethodProps) => {
+		const { ids } = param2Obj<{ ids: string }>(config.url)
+		const batchRemoveIds = ids.split(',')
+		List = List.filter((u) => !batchRemoveIds.includes(u.id))
 		return {
 			code: 20000,
 			data: {
@@ -131,18 +147,16 @@ export default {
 	 * @param id, name, addr, age, birth, sex
 	 * @return {{code: number, data: {message: string}}}
 	 */
-	updateUser: (config: userConfigProps) => {
-		const { id, name, addr, age, birth, sex } = JSON.parse(config.body)
-		const sex_num = Number.parseInt(sex)
-		List.some((u) => {
-			if (u.id === id) {
-				u.name = name
-				u.addr = addr
-				u.age = age
-				u.birth = birth
-				u.sex = sex_num
-				return true
+	updateUser: (config: TPostMethodProps) => {
+		const newValue = JSON.parse(config.body) as userDataType
+		List = List.map((u) => {
+			if (u.id === newValue.id) {
+				return {
+					...newValue,
+					id: u.id,
+				}
 			}
+			return u
 		})
 		return {
 			code: 20000,
