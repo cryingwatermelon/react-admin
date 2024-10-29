@@ -1,5 +1,13 @@
 {
-	"cSpell.words": ["echart", "echarts", "hoverable", "Sider"],
+	"cSpell.words": [
+		"antd",
+		"echart",
+		"echarts",
+		"hoverable",
+		"Popconfirm",
+		"Sider",
+		"TJSON"
+	],
 	"editor.tabSize": 2,
 	"editor.formatOnSave": true,
 	"editor.defaultFormatter": "biomejs.biome",

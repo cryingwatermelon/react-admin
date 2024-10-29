@@ -1,5 +1,6 @@
 import CommonAside from '@/components/commonAside'
-import CommonHeader from '@/components/conmonHeader'
+import CommonHeader from '@/components/commonHeader'
+import CommonTag from '@/components/commonTag'
 import type { RootState } from '@/store'
 import { Layout, theme } from 'antd'
 import { useSelector } from 'react-redux'
@@ -17,6 +18,7 @@ const Main: React.FC = () => {
       <CommonAside collapsed={collapsed} />
       <Layout>
         <CommonHeader collapsed={collapsed} />
+        <CommonTag />
         <Content
           style={{
             margin: '24px 16px',

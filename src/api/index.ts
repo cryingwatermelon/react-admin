@@ -27,7 +27,7 @@ export const getUser = (params?: TGetUserListParams) => {
 
 export const addUser = (data: TUser) => {
   return http.request<TUserAddData>({
-    url: '/user/add',
+    url: '/user/addUser',
     method: 'post',
     data,
   })
@@ -35,7 +35,7 @@ export const addUser = (data: TUser) => {
 
 export const editUser = (data: TUser) => {
   return http.request<TUserEditData>({
-    url: '/user/edit',
+    url: '/user/editUser',
     method: 'post',
     data,
   })
@@ -43,7 +43,7 @@ export const editUser = (data: TUser) => {
 
 export const deleteUser = (data: Pick<TUser, 'id'>) => {
   return http.request<TUserDeleteData>({
-    url: '/user/del',
+    url: '/user/deleteUser',
     method: 'post',
     data,
   })
