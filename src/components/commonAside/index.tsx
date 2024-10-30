@@ -64,7 +64,7 @@ const CommonAside = ({ collapsed }: commonAsideProps) => {
       name: data.name,
       label: data.label,
     })
-    setCurrentMenu(data)
+    dispatch(setCurrentMenu(data))
     navigate(e.key)
   }
 

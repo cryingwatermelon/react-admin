@@ -14,13 +14,13 @@ const initialState: TTableState = {
   isCollapse: false,
   tabList: [
     {
-      path: '/',
+      path: '/home',
       name: 'home',
       label: '首页',
     },
   ],
   currentMenu: {
-    path: '/',
+    path: '/home',
     name: 'home',
     label: '首页',
   },
@@ -44,7 +44,11 @@ const tabSlice = createSlice({
           state.tabList.push(value)
         }
       } else if (value.name === 'home' && state.tabList.length === 1) {
-        state.currentMenu = initialState.currentMenu
+        state.currentMenu = {
+          path: '/home',
+          label: '首页',
+          name: 'home',
+        }
       }
     },
     closeTab: (state, { payload: value }: PayloadAction<TTab>) => {
@@ -53,7 +57,11 @@ const tabSlice = createSlice({
     },
     setCurrentMenu: (state, { payload: value }: PayloadAction<TTab>) => {
       if (value.name === 'home') {
-        state.currentMenu = initialState.currentMenu
+        state.currentMenu = {
+          path: '/home',
+          label: '首页',
+          name: 'home',
+        }
       } else {
         state.currentMenu = value
       }
