@@ -5,8 +5,6 @@ type TPostMethodProps = {
 export default {
 	getMenu: (config: TPostMethodProps) => {
 		const { username, password } = JSON.parse(config.body) ?? {}
-		debugger
-
 		// 先判断用户是否存在
 		// 判断账号和密码是否对应
 		if (username === 'admin' && password === 'admin') {

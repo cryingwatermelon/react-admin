@@ -9,8 +9,9 @@ const Login = () => {
 	const navigate = useNavigate()
 	const handleSubmit: FormProps<FieldType>['onFinish'] = (values) => {
 		getMenu(values).then(({ data }) => {
-			console.log(data, 'getMenu')
-			localStorage.setItem('token', data.token as string)
+			// console.log(data, 'getMenu')
+			if (!data.token) return
+			localStorage.setItem('token', data.token)
 			navigate('/home')
 		})
 	}
