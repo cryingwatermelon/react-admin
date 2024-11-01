@@ -15,6 +15,7 @@ const CommonHeader = ({ collapsed }: commonHeaderProps) => {
 	// console.log(collapsed, "commonHeader");
 	const navigate = useNavigate()
 	const logout = () => {
+		localStorage.removeItem('token')
 		navigate('/login')
 	}
 	const items: MenuProps['items'] = [
