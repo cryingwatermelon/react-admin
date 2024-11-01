@@ -52,10 +52,10 @@ export const deleteUser = (data: userDataType) => {
 	})
 }
 
-export const getMenu = (params: FieldType) => {
+export const getMenu = (data: FieldType) => {
 	return http.request<TPermissionGetMenu>({
 		url: '/permission/getMenu',
 		method: 'post',
-		params,
+		data,
 	})
 }
