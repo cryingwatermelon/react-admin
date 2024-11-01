@@ -4,6 +4,7 @@ import Mall from '@/pages/mall'
 import PageOne from '@/pages/other/pageOne'
 import PageTwo from '@/pages/other/pageTwo'
 import User from '@/pages/user'
+import Login from '@/pages/login'
 import { Navigate, createBrowserRouter } from 'react-router-dom'
 
 const router = createBrowserRouter([
@@ -42,6 +43,10 @@ const router = createBrowserRouter([
 				],
 			},
 		],
+	},
+	{
+		path: '/login',
+		Component: Login,
 	},
 ])
 

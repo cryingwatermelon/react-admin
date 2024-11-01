@@ -5,9 +5,10 @@ import { useNavigate } from 'react-router-dom'
 import { useDispatch } from 'react-redux'
 import '@/main.css'
 import MenuConfig from '@/config/index'
+import type { TabItem } from '@/store/reducer/tab'
 
 import type { ItemType, SubMenuType } from 'antd/es/menu/interface'
-import { selectMenuList } from '@/store/reducer/tab'
+import { setMenuList } from '@/store/reducer/tab'
 
 const { Sider } = Layout
 type commonAsideProps = {
@@ -17,8 +18,9 @@ const CommonAside = ({ collapsed }: commonAsideProps) => {
 	const navigate = useNavigate()
 	const dispatch = useDispatch()
 	//添加数据到store
-	const setTabList = (value) => {
-		dispatch(selectMenuList(value))
+	const setTabList = (value: TabItem) => {
+		// console.log(value, 'before add to tablist')
+		dispatch(setMenuList(value))
 	}
 	//处理菜单数据
 	const iconToElement = (name: IconNames) => {

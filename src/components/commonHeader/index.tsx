@@ -13,18 +13,17 @@ type commonHeaderProps = {
 }
 const CommonHeader = ({ collapsed }: commonHeaderProps) => {
 	// console.log(collapsed, "commonHeader");
-	const logout = () => {}
+	const navigate = useNavigate()
+	const logout = () => {
+		navigate('/login')
+	}
 	const items: MenuProps['items'] = [
 		{
-			label: <a href="https://www.antgroup.com">个人中心</a>,
+			label: <Button>个人中心</Button>,
 			key: '0',
 		},
 		{
-			label: (
-				<a href="https://www.aliyun.com" onClick={() => logout}>
-					退出
-				</a>
-			),
+			label: <Button onClick={() => logout()}>退出登录</Button>,
 			key: '1',
 		},
 	]
